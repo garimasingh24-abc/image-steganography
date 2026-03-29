@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Contact Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --border-light: #e2e8f0;
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0,0, 0.1);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .contact-container {
+            background: var(--bg-card);
+            padding: 3rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .contact-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .contact-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+        }
+
+        .contact-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 1.25rem 1rem 1.25rem 3.5rem;
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-family: inherit;
+            background: rgba(248, 250, 252, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus + .form-icon,
+        .form-textarea:focus + .form-icon {
+            color: #667eea;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 140px;
+            padding-top: 1.25rem;
+            padding-bottom: 1.25rem;
+        }
+
+        /* Validation States */
+        .form-input.error,
+        .form-textarea.error {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.05);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .form-input.success,
+        .form-textarea.success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Error Messages */
+        .error-message {
+            display: none;
+            color: var(--error);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        .submit-btn.loading .btn-loading {
+            display: inline-flex;
+        }
+
+        .btn-loading {
+            display: none;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--success);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .contact-container {
+                padding: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .contact-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .contact-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contact-container">
+        <div class="contact-header">
+            <div class="contact-badge">
+                <i class="fas fa-paper-plane"></i>
+                Get In Touch
+            </div>
+            <h1 class="contact-title">Start Your Project</h1>
+            <p class="contact-subtitle">
+                We'd love to hear from you. Send us a message and we'll respond within 24 hours.
+            </p>
+        </div>
+
+        <form id="contactForm" class="contact-form">
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                Thank you! Your message has been sent successfully. We'll get back to you soon.
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <input type="text" class="form-input" id="name" placeholder="Full Name" required>
+                    <i class="fas fa-user form-icon"></i>
+                    <div class="error-message" id="nameError">Please enter your full name</div>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" id="email" placeholder="Email Address" required>
+                    <i class="fas fa-envelope form-icon"></i>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="text" class="form-input" id="subject" placeholder="Subject" required>
+                <i class="fas fa-tag form-icon"></i>
+                <div class="error-message" id="subjectError">Please enter a subject</div>
+            </div>
+
+            <div class="form-group">
+                <textarea class="form-textarea" id="message" placeholder="Tell us about your project..." required></textarea>
+                <i class="fas fa-comment form-icon"></i>
+                <div class="error-message" id="messageError">Please enter your message (min 10 characters)</div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="btn-text">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Message
+                </span>
+                <div class="btn-loading">
+                    <i class="fas fa-spinner"></i>
+                    Sending...
+                </div>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        class ContactForm {
+            constructor() {
+                this.form = document.getElementById('contactForm');
+                this.submitBtn = document.getElementById('submitBtn');
+                this.successMessage = document.getElementById('successMessage');
+                
+                this.init();
+            }
+
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                
+                // Real-time validation
+                ['name', 'email', 'subject', 'message'].forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    field.addEventListener('blur', () => this.validateField(fieldId));
+                    field.addEventListener('input', () => this.clearError(fieldId));
+                });
+            }
+
+            validateField(fieldId) {
+                const field = document.getElementById(fieldId);
+                const errorEl = document.getElementById(fieldId + 'Error');
+                let isValid = true;
+                let errorMsg = '';
+
+                switch(fieldId) {
+                    case 'name':
+                        if (!field.value.trim() || field.value.trim().length < 2) {
+                            errorMsg = 'Please enter your full name (min 2 characters)';
+                            isValid = false;
+                        }
+                        break;
+
+                    case 'email':
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!field.value.trim()) {
+                            errorMsg = 'Please enter your email address';
+                            isValid = false;
+                        } else if (!emailRegex.test(field.value)) {
+                            errorMsg = 'Please enter a valid email address';
+                            isValid = false;
+                        }
+                        break;
+
+                    case 'subject':
+                        if (!field.value.trim() || field.value.trim().length < 3) {
+                            errorMsg = 'Please enter a subject (min 3 characters)';
+                            isValid = false;
+                        }
+                        break;
+
+                    case 'message':
+                        if (!field.value.trim() || field.value.trim().length < 10) {
+                            errorMsg = 'Please enter your message (min 10 characters)';
+                            isValid = false;
+                        }
+                        break;
+                }
+
+                this.setFieldState(field, isValid, errorMsg);
+                return isValid;
+            }
+
+            setFieldState(field, isValid, errorMsg) {
+                field.classList.remove('error', 'success');
+                
+                if (isValid) {
+                    field.classList.add('success');
+                } else {
+                    field.classList.add('error');
+                    const errorEl = document.getElementById(field.id + 'Error');
+                    errorEl.textContent = errorMsg;
+                    errorEl.classList.add('show');
+                }
+            }
+
+            clearError(fieldId) {
+                const field = document.getElementById(fieldId);
+                const errorEl = document.getElementById(fieldId + 'Error');
+                
+                field.classList.remove('error');
+                errorEl.classList.remove('show');
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+
+                // Validate all fields
+                const fields = ['name', 'email', 'subject', 'message'];
+                let isFormValid = true;
+
+                fields.forEach(fieldId => {
+                    if (!this.validateField(fieldId)) {
+                        isFormValid = false;
+                    }
+                });
+
+                if (!isFormValid) {
+                    // Scroll to first error
+                    const firstError = document.querySelector('.error');
+                    firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+
+                // Simulate API call
+                this.setLoading(true);
+
+                try {
+                    // Simulate network delay
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    // Hide form, show success
+                    this.form.style.display = 'none';
+                    this.successMessage.classList.add('show');
+                    
+                    // Scroll to success message
+                    this.successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                } catch (error) {
+                    this.showError('Something went wrong. Please try again.');
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            setLoading(loading) {
+                this.submitBtn.classList.toggle('loading', loading);
+            }
+
+            showError(message) {
+                // You can implement toast notification here
+                console.error(message);
+            }
+        }
+
+        // Initialize form when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new ContactForm();
+        });
+    </script>
+</body>
+</html>
